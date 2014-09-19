@@ -12,19 +12,20 @@ DIR="$PWD"
 PATCHPATH="${DIR}/patches"
 EXPORTPATH="${DIR}/export"
 
-RECIPEDIR="linux-3.11"
-RECIPENAME="linux-mainline_3.11.bb"
+RECIPEDIR="linux-3.13"
+RECIPENAME="linux-mainline_3.13.bb"
 RECIPEFILE="${DIR}/recipes/${RECIPENAME}"
 
 #For TAG, use mainline Kernel tags
-TAG="v3.11"
+TAG="v3.13.6"
 EXTRATAG=""
 
-EXTERNAL_TREE="git://github.com/torvalds/linux.git"
-EXTERNAL_BRANCH="master"
-EXTERNAL_SHA="6e4664525b1db28f8c4e1130957f70a94c19213e"
+EXTERNAL_TREE="git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git"
+#EXTERNAL_BRANCH="master"
+EXTERNAL_BRANCH="linux-3.13.y"
+EXTERNAL_SHA="404df65d0480f6da2b768f6c9b5259436b1de10f"
 
-PATCHSET="general-fixes dtc-fixes dtc-overlays of-fixes pdev-fixes dma-devel mmc-fixes dts-fixes i2c-fixes pinctrl-fixes capemgr reset capes lcdc-fixes net tscadc"
+PATCHSET="deassert-hard-reset dts fixes pru sgx usb static-capes"
 
 git_kernel_stable () {
 	git pull git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git master --tags || true
@@ -62,7 +63,7 @@ git tag | grep ${TAG} | grep -v rc >/dev/null || git_pull_torvalds
 git checkout -f ${TAG} -b tmp-patching-branch
 
 if [ "${EXTERNAL_TREE}" ] ; then
-	#we are pulling the  external tree into 1st branch, and checkout the SHA into a 2nd, 
+	#we are pulling the  external tree into 1st branch, and checkout the SHA into a 2nd,
 	#which saves a little pain in cleaning up master, when switching between different beagleboard branches
 	git pull ${EXTERNAL_TREE} ${EXTERNAL_BRANCH}
 	git checkout ${EXTERNAL_SHA} -b tmp-patching-branch-sha
@@ -136,9 +137,6 @@ cp -a ${EXPORTPATH}/* ${EXPORTPATH}-oe/recipes-kernel/linux/${RECIPEDIR}/
 
 mkdir -p ${EXPORTPATH}-oe/recipes-kernel/linux/${RECIPEDIR}/beaglebone
 cp ${DIR}/configs/beaglebone ${EXPORTPATH}-oe/recipes-kernel/linux/${RECIPEDIR}/beaglebone/defconfig
-
-mkdir -p ${EXPORTPATH}-oe/recipes-kernel/linux/${RECIPEDIR}/beagleboard
-cp ${DIR}/configs/beagleboard ${EXPORTPATH}-oe/recipes-kernel/linux/${RECIPEDIR}/beagleboard/defconfig
 
 if [ -e ${DIR}/kernel/am335x-pm-firmware.bin ] ; then
 	cp ${DIR}/kernel/am335x-pm-firmware.bin ${EXPORTPATH}-oe/recipes-kernel/linux/${RECIPEDIR}/

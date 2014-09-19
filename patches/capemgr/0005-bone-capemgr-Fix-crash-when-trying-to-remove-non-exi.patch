@@ -1,4 +1,4 @@
-From 4b6ec4293617d84d50dc58b3ef243eb2fdaa5be0 Mon Sep 17 00:00:00 2001
+From 336155663245de5668b0abb29af0e60b236fcb73 Mon Sep 17 00:00:00 2001
 From: Pantelis Antoniou <panto@antoniou-consulting.com>
 Date: Wed, 27 Feb 2013 18:35:09 +0200
 Subject: [PATCH 05/11] bone-capemgr: Fix crash when trying to remove
@@ -8,11 +8,11 @@ Wrong test for not-found case lead to crash. Fix.
 
 Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
 ---
- drivers/misc/cape/beaglebone/capemgr.c |   11 ++++-------
+ drivers/misc/cape/beaglebone/capemgr.c | 11 ++++-------
  1 file changed, 4 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/misc/cape/beaglebone/capemgr.c b/drivers/misc/cape/beaglebone/capemgr.c
-index 2656e3a..9f8da94 100644
+index 0200be2..a0e118c 100644
 --- a/drivers/misc/cape/beaglebone/capemgr.c
 +++ b/drivers/misc/cape/beaglebone/capemgr.c
 @@ -990,15 +990,12 @@ static ssize_t slots_store(struct device *dev, struct device_attribute *attr,
@@ -36,5 +36,5 @@ index 2656e3a..9f8da94 100644
  		mutex_unlock(&info->slots_list_mutex);
  
 -- 
-1.7.9.5
+1.8.2.1
 

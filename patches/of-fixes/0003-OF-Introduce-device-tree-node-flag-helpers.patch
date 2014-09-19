@@ -1,4 +1,4 @@
-From d50f5dd477593078345df917ba19d8626cfd93e7 Mon Sep 17 00:00:00 2001
+From 0f4d9673a1b325bb6752a179931adc507639a3a1 Mon Sep 17 00:00:00 2001
 From: Pantelis Antoniou <panto@antoniou-consulting.com>
 Date: Fri, 14 Dec 2012 13:10:51 +0200
 Subject: [PATCH 3/8] OF: Introduce device tree node flag helpers.
@@ -7,11 +7,11 @@ Helper functions for working with device node flags.
 
 Signed-off-by: Pantelis Antoniou <panto@antoniou-consulting.com>
 ---
- include/linux/of.h |   20 ++++++++++++++++++++
+ include/linux/of.h | 20 ++++++++++++++++++++
  1 file changed, 20 insertions(+)
 
 diff --git a/include/linux/of.h b/include/linux/of.h
-index 1fd08ca..32ad0b0 100644
+index f95aee3..786c4f6 100644
 --- a/include/linux/of.h
 +++ b/include/linux/of.h
 @@ -114,6 +114,26 @@ static inline void of_node_set_flag(struct device_node *n, unsigned long flag)
@@ -42,5 +42,5 @@ index 1fd08ca..32ad0b0 100644
  
  /*
 -- 
-1.7.9.5
+1.8.2.1
 
