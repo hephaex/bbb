@@ -1,4 +1,38 @@
 # BeagleBone Black
+Linux Kernel & u-boot for the beagleboard.org boards
+
+reference:
+
+Please see https://github.com/beagleboard/linux for the latest official kernels.
+
+## kernel 
+
+### kernel patchset usage
+======
+
+beaglebone-3.11 patchset:
+```
+git checkout origin/3.11 -b 3.11
+./patch.sh
+```
+
+beaglebone-3.12 patchset:
+```
+git checkout origin/3.12 -b 3.12
+./patch.sh
+```
+
+beaglebone-3.13 patchset:
+```
+git checkout origin/3.13 -b 3.13
+./patch.sh
+```
+
+beaglebone-3.14 patchset:
+```
+git checkout origin/3.14 -b 3.14
+./patch.sh
+```
 
 ## u-Boot
 * [Reference](http://eewiki.net/display/linuxonarm/BeagleBone+Black#BeagleBoneBlack-Bootloader:U-Boot)
