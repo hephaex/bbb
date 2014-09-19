@@ -70,4 +70,14 @@ Configuring for am335x_evm - Board: am335x_evm, Options: SERIAL1,CONS_INDEX=1,NA
 -rw-r--r-- 1 mscho mscho 450168  9월 19 13:42 u-boot.img
 ```
 
+## dtb
 
+dtc : device tree compiler
+
+[Reference](http://eewiki.net/display/linuxonarm/BeagleBone+Black#BeagleBoneBlack-Upgradedistro)
+
+```
+$ wget -c https://github.com/hephaex/toolchain/tree/master/arm/dtc.sh
+$ chmod +x dtc.sh
+$ ./dtc.sh
+```
