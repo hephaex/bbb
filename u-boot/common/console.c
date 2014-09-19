@@ -109,7 +109,7 @@ static int console_setfile(int file, struct stdio_dev * dev)
 	case stderr:
 		/* Start new device */
 		if (dev->start) {
-			error = dev->start(dev);
+			error = dev->start();
 			/* If it's not started dont use it */
 			if (error < 0)
 				break;
@@ -159,7 +159,7 @@ static int console_getc(int file)
 	unsigned char ret;
 
 	/* This is never called with testcdev == NULL */
-	ret = tstcdev->getc(tstcdev);
+	ret = tstcdev->getc();
 	tstcdev = NULL;
 	return ret;
 }
@@ -173,7 +173,7 @@ static int console_tstc(int file)
 	for (i = 0; i < cd_count[file]; i++) {
 		dev = console_devices[file][i];
 		if (dev->tstc != NULL) {
-			ret = dev->tstc(dev);
+			ret = dev->tstc();
 			if (ret > 0) {
 				tstcdev = dev;
 				disable_ctrlc(0);
@@ -194,7 +194,7 @@ static void console_putc(int file, const char c)
 	for (i = 0; i < cd_count[file]; i++) {
 		dev = console_devices[file][i];
 		if (dev->putc != NULL)
-			dev->putc(dev, c);
+			dev->putc(c);
 	}
 }
 
@@ -206,7 +206,7 @@ static void console_puts(int file, const char *s)
 	for (i = 0; i < cd_count[file]; i++) {
 		dev = console_devices[file][i];
 		if (dev->puts != NULL)
-			dev->puts(dev, s);
+			dev->puts(s);
 	}
 }
 
@@ -222,22 +222,22 @@ static inline void console_doenv(int file, struct stdio_dev *dev)
 #else
 static inline int console_getc(int file)
 {
-	return stdio_devices[file]->getc(stdio_devices[file]);
+	return stdio_devices[file]->getc();
 }
 
 static inline int console_tstc(int file)
 {
-	return stdio_devices[file]->tstc(stdio_devices[file]);
+	return stdio_devices[file]->tstc();
 }
 
 static inline void console_putc(int file, const char c)
 {
-	stdio_devices[file]->putc(stdio_devices[file], c);
+	stdio_devices[file]->putc(c);
 }
 
 static inline void console_puts(int file, const char *s)
 {
-	stdio_devices[file]->puts(stdio_devices[file], s);
+	stdio_devices[file]->puts(s);
 }
 
 static inline void console_printdevs(int file)
@@ -417,7 +417,7 @@ static inline void print_pre_console_buffer(void) {}
 void putc(const char c)
 {
 #ifdef CONFIG_SANDBOX
-	if (!gd || !(gd->flags & GD_FLG_SERIAL_READY)) {
+	if (!gd) {
 		os_putc(c);
 		return;
 	}
@@ -447,7 +447,7 @@ void putc(const char c)
 void puts(const char *s)
 {
 #ifdef CONFIG_SANDBOX
-	if (!gd || !(gd->flags & GD_FLG_SERIAL_READY)) {
+	if (!gd) {
 		os_puts(s);
 		return;
 	}
@@ -504,7 +504,7 @@ int vprintf(const char *fmt, va_list args)
 	uint i;
 	char printbuffer[CONFIG_SYS_PBSIZE];
 
-#if defined(CONFIG_PRE_CONSOLE_BUFFER) && !defined(CONFIG_SANDBOX)
+#ifndef CONFIG_PRE_CONSOLE_BUFFER
 	if (!gd->have_console)
 		return 0;
 #endif

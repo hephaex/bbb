@@ -26,6 +26,7 @@
  *
  */
 
+#define __UBOOT__
 #ifndef __UBOOT__
 #include <linux/init.h>
 #include <linux/module.h>

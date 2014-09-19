@@ -6,17 +6,15 @@
  */
 
 #include <common.h>
-#include <asm/nios2.h>
+#include <nios2.h>
+#include <nios2-io.h>
 #include <asm/cache.h>
-
-DECLARE_GLOBAL_DATA_PTR;
 
 #if defined (CONFIG_SYS_NIOS_SYSID_BASE)
 extern void display_sysid (void);
 #endif /* CONFIG_SYS_NIOS_SYSID_BASE */
 
-#ifdef CONFIG_DISPLAY_CPUINFO
-int print_cpuinfo(void)
+int checkcpu (void)
 {
 	printf ("CPU   : Nios-II\n");
 #if !defined(CONFIG_SYS_NIOS_SYSID_BASE)
@@ -26,7 +24,6 @@ int print_cpuinfo(void)
 #endif
 	return (0);
 }
-#endif /* CONFIG_DISPLAY_CPUINFO */
 
 int do_reset(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
@@ -49,12 +46,4 @@ void dcache_enable(void)
 void dcache_disable(void)
 {
 	flush_dcache(CONFIG_SYS_DCACHE_SIZE, CONFIG_SYS_DCACHELINE_SIZE);
-}
-
-int arch_cpu_init(void)
-{
-	gd->cpu_clk = CONFIG_SYS_CLK_FREQ;
-	gd->ram_size = CONFIG_SYS_SDRAM_SIZE;
-
-	return 0;
 }

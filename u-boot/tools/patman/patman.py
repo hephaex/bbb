@@ -25,6 +25,9 @@ import test
 
 
 parser = OptionParser()
+parser.add_option('-a', '--no-apply', action='store_false',
+                  dest='apply_patches', default=True,
+                  help="Don't test-apply patches with git am")
 parser.add_option('-H', '--full-help', action='store_true', dest='full_help',
        default=False, help='Display the README file')
 parser.add_option('-c', '--count', dest='count', type='int',
@@ -55,7 +58,7 @@ parser.add_option('--no-check', action='store_false', dest='check_patch',
 parser.add_option('--no-tags', action='store_false', dest='process_tags',
                   default=True, help="Don't process subject tags as aliaes")
 
-parser.usage += """
+parser.usage = """patman [options]
 
 Create patches from commits in a branch, check them and email them as
 specified by tags you place in the commits. Use -n to do a dry run first."""
@@ -119,7 +122,8 @@ else:
     col = terminal.Color()
     if not options.count:
         str = 'No commits found to process - please use -c flag'
-        sys.exit(col.Color(col.RED, str))
+        print col.Color(col.RED, str)
+        sys.exit(1)
 
     # Read the metadata from the commits
     if options.count:
@@ -140,24 +144,23 @@ else:
         ok = checkpatch.CheckPatches(options.verbose, args)
     else:
         ok = True
+    if options.apply_patches:
+        if not gitutil.ApplyPatches(options.verbose, args,
+                                    options.count + options.start):
+            ok = False
 
     cc_file = series.MakeCcFile(options.process_tags, cover_fname,
                                 not options.ignore_bad_tags)
 
     # Email the patches out (giving the user time to check / cancel)
     cmd = ''
-    its_a_go = ok or options.ignore_errors
-    if its_a_go:
+    if ok or options.ignore_errors:
         cmd = gitutil.EmailPatches(series, cover_fname, args,
                 options.dry_run, not options.ignore_bad_tags, cc_file,
                 in_reply_to=options.in_reply_to)
-    else:
-        print col.Color(col.RED, "Not sending emails due to errors/warnings")
 
     # For a dry run, just show our actions as a sanity check
     if options.dry_run:
         series.ShowActions(args, cmd, options.process_tags)
-        if not its_a_go:
-            print col.Color(col.RED, "Email would not be sent")
 
     os.remove(cc_file)

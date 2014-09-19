@@ -140,6 +140,7 @@ static inline int onenand_memory_bbt(struct mtd_info *mtd,
 {
 	unsigned char data_buf[MAX_ONENAND_PAGESIZE];
 
+	bd->options &= ~NAND_BBT_SCANEMPTY;
 	return create_bbt(mtd, data_buf, bd, -1);
 }
 

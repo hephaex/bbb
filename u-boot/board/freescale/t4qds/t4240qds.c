@@ -528,7 +528,7 @@ int config_backside_crossbar_mux(void)
 int board_early_init_r(void)
 {
 	const unsigned int flashbase = CONFIG_SYS_FLASH_BASE;
-	int flash_esel = find_tlb_idx((void *)flashbase, 1);
+	const u8 flash_esel = find_tlb_idx((void *)flashbase, 1);
 
 	/*
 	 * Remap Boot flash + PROMJET region to caching-inhibited
@@ -539,14 +539,8 @@ int board_early_init_r(void)
 	flush_dcache();
 	invalidate_icache();
 
-	if (flash_esel == -1) {
-		/* very unlikely unless something is messed up */
-		puts("Error: Could not find TLB for FLASH BASE\n");
-		flash_esel = 2;	/* give our best effort to continue */
-	} else {
-		/* invalidate existing TLB entry for flash + promjet */
-		disable_tlb(flash_esel);
-	}
+	/* invalidate existing TLB entry for flash + promjet */
+	disable_tlb(flash_esel);
 
 	set_tlb(1, flashbase, CONFIG_SYS_FLASH_BASE_PHYS,
 		MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
@@ -644,10 +638,9 @@ unsigned long get_board_ddr_clk(void)
 int misc_init_r(void)
 {
 	u8 sw;
-	void *srds_base = (void *)CONFIG_SYS_FSL_CORENET_SERDES_ADDR;
-	serdes_corenet_t *srds_regs;
+	serdes_corenet_t *srds_regs =
+		(void *)CONFIG_SYS_FSL_CORENET_SERDES_ADDR;
 	u32 actual[MAX_SERDES];
-	u32 pllcr0, expected;
 	unsigned int i;
 
 	sw = QIXIS_READ(brdcfg[2]);
@@ -670,9 +663,8 @@ int misc_init_r(void)
 	}
 
 	for (i = 0; i < MAX_SERDES; i++) {
-		srds_regs = srds_base + i * 0x1000;
-		pllcr0 = srds_regs->bank[0].pllcr0;
-		expected = pllcr0 & SRDS_PLLCR0_RFCK_SEL_MASK;
+		u32 pllcr0 = srds_regs->bank[i].pllcr0;
+		u32 expected = pllcr0 & SRDS_PLLCR0_RFCK_SEL_MASK;
 		if (expected != actual[i]) {
 			printf("Warning: SERDES%u expects reference clock %sMHz, but actual is %sMHz\n",
 			       i + 1, serdes_clock_to_string(expected),

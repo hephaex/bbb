@@ -15,13 +15,12 @@
 #endif
 
 #ifndef CONFIG_WD_PERIOD
-# define CONFIG_WD_PERIOD	(10 * 1000 * 1000)	/* 10 seconds default */
+# define CONFIG_WD_PERIOD	(10 * 1000 * 1000)	/* 10 seconds default*/
 #endif
 
 DECLARE_GLOBAL_DATA_PTR;
 
 #ifdef CONFIG_SYS_TIMER_RATE
-/* Returns tick rate in ticks per second */
 ulong notrace get_tbclk(void)
 {
 	return CONFIG_SYS_TIMER_RATE;
@@ -52,10 +51,9 @@ unsigned long long __weak notrace get_ticks(void)
 	return ((unsigned long long)gd->timebase_h << 32) | gd->timebase_l;
 }
 
-/* Returns time in milliseconds */
-static unsigned long long notrace tick_to_time(unsigned long long tick)
+static unsigned long long notrace tick_to_time(uint64_t tick)
 {
-	ulong div = get_tbclk();
+	unsigned int div = get_tbclk();
 
 	tick *= CONFIG_SYS_HZ;
 	do_div(tick, div);
@@ -67,7 +65,6 @@ int __weak timer_init(void)
 	return 0;
 }
 
-/* Returns time in milliseconds */
 ulong __weak get_timer(ulong base)
 {
 	return tick_to_time(get_ticks()) - base;
@@ -77,10 +74,9 @@ unsigned long __weak notrace timer_get_us(void)
 {
 	return tick_to_time(get_ticks() * 1000);
 }
-
 static unsigned long long usec_to_tick(unsigned long usec)
 {
-	unsigned long long tick = usec;
+	uint64_t tick = usec;
 	tick *= get_tbclk();
 	do_div(tick, 1000000);
 	return tick;
@@ -89,10 +85,12 @@ static unsigned long long usec_to_tick(unsigned long usec)
 void __weak __udelay(unsigned long usec)
 {
 	unsigned long long tmp;
+	ulong tmo;
 
-	tmp = get_ticks() + usec_to_tick(usec);	/* get current timestamp */
+	tmo = usec_to_tick(usec);
+	tmp = get_ticks() + tmo;	/* get current timestamp */
 
-	while (get_ticks() < tmp+1)	/* loop till event */
+	while (get_ticks() < tmp)	/* loop till event */
 		 /*NOP*/;
 }
 

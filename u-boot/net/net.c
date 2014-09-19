@@ -385,14 +385,14 @@ restart:
 #endif
 #if defined(CONFIG_CMD_DHCP)
 		case DHCP:
-			BootpReset();
+			BootpTry = 0;
 			NetOurIP = 0;
 			DhcpRequest();		/* Basically same as BOOTP */
 			break;
 #endif
 
 		case BOOTP:
-			BootpReset();
+			BootpTry = 0;
 			NetOurIP = 0;
 			BootpRequest();
 			break;

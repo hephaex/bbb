@@ -13,7 +13,6 @@
 #include <asm/io.h>
 #include <asm/arch/cpu.h>
 #include <asm/arch/kirkwood.h>
-#include <mvebu_mmc.h>
 
 #define BUFLEN	16
 
@@ -378,11 +377,3 @@ int cpu_eth_init(bd_t *bis)
 	return 0;
 }
 #endif
-
-#ifdef CONFIG_MVEBU_MMC
-int board_mmc_init(bd_t *bis)
-{
-	mvebu_mmc_init(bis);
-	return 0;
-}
-#endif /* CONFIG_MVEBU_MMC */

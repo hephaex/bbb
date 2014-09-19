@@ -398,7 +398,7 @@ int i8042_kbd_init(void)
  * i8042_tstc - test if keyboard input is available
  *		option: cursor blinking if called in a loop
  */
-int i8042_tstc(struct stdio_dev *dev)
+int i8042_tstc(void)
 {
 	unsigned char scan_code = 0;
 
@@ -432,7 +432,7 @@ int i8042_tstc(struct stdio_dev *dev)
  * i8042_getc - wait till keyboard input is available
  *		option: turn on/off cursor while waiting
  */
-int i8042_getc(struct stdio_dev *dev)
+int i8042_getc(void)
 {
 	int ret_chr;
 	unsigned char scan_code;

@@ -8,10 +8,8 @@
 #ifndef _KBD_H_
 #define _KBD_H_
 
-struct stdio_dev;
-
-int kbd_testc(struct stdio_dev *sdev);
-int kbd_getc(struct stdio_dev *sdev);
+extern int kbd_testc(void);
+extern int kbd_getc(void);
 extern void kbd_interrupt(void);
 extern char *kbd_initialize(void);
 

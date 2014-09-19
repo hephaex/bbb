@@ -22,7 +22,6 @@
 #include <common.h>
 #include <linux/compat.h>
 #include <linux/mtd/mtd.h>
-#include "linux/mtd/flashchip.h"
 #include <linux/mtd/onenand.h>
 
 #include <asm/io.h>

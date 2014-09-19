@@ -585,7 +585,7 @@ static void rx51_kp_fill(u8 k, u8 mods)
  * Routine: rx51_kp_tstc
  * Description: Test if key was pressed (from buffer).
  */
-int rx51_kp_tstc(struct stdio_dev *sdev)
+int rx51_kp_tstc(void)
 {
 	u8 c, r, dk, i;
 	u8 intr;
@@ -641,10 +641,10 @@ int rx51_kp_tstc(struct stdio_dev *sdev)
  * Routine: rx51_kp_getc
  * Description: Get last pressed key (from buffer).
  */
-int rx51_kp_getc(struct stdio_dev *sdev)
+int rx51_kp_getc(void)
 {
 	keybuf_head %= KEYBUF_SIZE;
-	while (!rx51_kp_tstc(sdev))
+	while (!rx51_kp_tstc())
 		WATCHDOG_RESET();
 	return keybuf[keybuf_head++];
 }

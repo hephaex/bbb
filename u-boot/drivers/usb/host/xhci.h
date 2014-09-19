@@ -20,7 +20,9 @@
 #include <asm/cache.h>
 #include <asm/io.h>
 #include <linux/list.h>
-#include <linux/compat.h>
+
+#define upper_32_bits(n) (u32)((n) >> 32)
+#define lower_32_bits(n) (u32)(n)
 
 #define MAX_EP_CTX_NUM		31
 #define XHCI_ALIGNMENT		64
@@ -1119,7 +1121,7 @@ static inline void xhci_writeq(__le64 volatile *regs, const u64 val)
 	__u32 *ptr = (__u32 *)regs;
 	u32 val_lo = lower_32_bits(val);
 	/* FIXME */
-	u32 val_hi = upper_32_bits(val);
+	u32 val_hi = 0;
 	writel(val_lo, ptr);
 	writel(val_hi, ptr + 1);
 }

@@ -28,6 +28,7 @@
  */
 #define CONFIG_MARVELL
 #define CONFIG_FEROCEON_88FR131		/* CPU Core subversion */
+#define CONFIG_KIRKWOOD			/* SOC Family Name */
 #define CONFIG_KW88F6281		/* SOC Name */
 #define CONFIG_MACH_KM_KIRKWOOD		/* Machine type */
 

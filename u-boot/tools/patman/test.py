@@ -55,7 +55,6 @@ This adds functions to enable/disable clocks and reset to on-chip peripherals.
 
 Signed-off-by: Simon Glass <sjg@chromium.org>
 ---
-
  arch/arm/cpu/armv7/tegra2/Makefile         |    2 +-
  arch/arm/cpu/armv7/tegra2/ap20.c           |   57 ++----
  arch/arm/cpu/armv7/tegra2/clock.c          |  163 +++++++++++++++++
@@ -201,7 +200,7 @@ index 0000000..2234c87
         self.assertEqual(result.errors, 0)
         self.assertEqual(result.warnings, 0)
         self.assertEqual(result.checks, 0)
-        self.assertEqual(result.lines, 56)
+        self.assertEqual(result.lines, 67)
         os.remove(inf)
 
     def testNoSignoff(self):
@@ -212,18 +211,18 @@ index 0000000..2234c87
         self.assertEqual(result.errors, 1)
         self.assertEqual(result.warnings, 0)
         self.assertEqual(result.checks, 0)
-        self.assertEqual(result.lines, 56)
+        self.assertEqual(result.lines, 67)
         os.remove(inf)
 
     def testSpaces(self):
         inf = self.SetupData('spaces')
         result = checkpatch.CheckPatch(inf)
         self.assertEqual(result.ok, False)
-        self.assertEqual(len(result.problems), 2)
+        self.assertEqual(len(result.problems), 1)
         self.assertEqual(result.errors, 0)
-        self.assertEqual(result.warnings, 2)
+        self.assertEqual(result.warnings, 1)
         self.assertEqual(result.checks, 0)
-        self.assertEqual(result.lines, 56)
+        self.assertEqual(result.lines, 67)
         os.remove(inf)
 
     def testIndent(self):
@@ -234,7 +233,7 @@ index 0000000..2234c87
         self.assertEqual(result.errors, 0)
         self.assertEqual(result.warnings, 0)
         self.assertEqual(result.checks, 1)
-        self.assertEqual(result.lines, 56)
+        self.assertEqual(result.lines, 67)
         os.remove(inf)
 
 

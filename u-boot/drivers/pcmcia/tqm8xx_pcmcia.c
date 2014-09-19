@@ -20,12 +20,14 @@
 #endif
 
 #if	defined(CONFIG_PCMCIA)	\
-	&& defined(CONFIG_TQM8xxL)
+	&& (defined(CONFIG_TQM8xxL) || defined(CONFIG_SVM_SC8xx))
 
 #if	defined(CONFIG_VIRTLAB2)
 #define	PCMCIA_BOARD_MSG	"Virtlab2"
 #elif	defined(CONFIG_TQM8xxL)
 #define	PCMCIA_BOARD_MSG	"TQM8xxL"
+#elif	defined(CONFIG_SVM_SC8xx)
+#define	PCMCIA_BOARD_MSG	"SC8xx"
 #endif
 
 #if	defined(CONFIG_NSCU)
@@ -300,4 +302,4 @@ done:
 	return 0;
 }
 
-#endif	/* CONFIG_PCMCIA && CONFIG_TQM8xxL */
+#endif	/* CONFIG_PCMCIA && (CONFIG_TQM8xxL || CONFIG_SVM_SC8xx) */

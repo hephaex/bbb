@@ -13,6 +13,7 @@
 #include "qe.h"
 #include "uccf.h"
 #include <phy.h>
+#include <asm/fsl_enet.h>
 
 #define MAX_TX_THREADS				8
 #define MAX_RX_THREADS				8

@@ -56,16 +56,14 @@ ulong flash_init(void)
 
 int flash_get_offsets(ulong base, flash_info_t * info)
 {
-	int i;
+	int j, k;
 
 	if ((info->flash_id & FLASH_VENDMASK) == FLASH_MAN_SST) {
 
 		info->start[0] = base;
-		info->protect[0] = 0;
-		for (i = 1; i < CONFIG_SYS_SST_SECT; i++) {
-			info->start[i] = info->start[i - 1]
-						+ CONFIG_SYS_SST_SECTSZ;
-			info->protect[i] = 0;
+		for (k = 0, j = 0; j < CONFIG_SYS_SST_SECT; j++, k++) {
+			info->start[k + 1] = info->start[k] + CONFIG_SYS_SST_SECTSZ;
+			info->protect[k] = 0;
 		}
 	}
 

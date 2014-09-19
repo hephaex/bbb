@@ -253,7 +253,7 @@ int do_diskboot(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
 
 /* ------------------------------------------------------------------------- */
 
-__weak void ide_led(uchar led, uchar status)
+void __ide_led(uchar led, uchar status)
 {
 #if defined(CONFIG_IDE_LED) && defined(PER8_BASE) /* required by LED_PORT */
 	static uchar led_buffer;	/* Buffer for current LED status */
@@ -269,6 +269,9 @@ __weak void ide_led(uchar led, uchar status)
 #endif
 }
 
+void ide_led(uchar led, uchar status)
+	__attribute__ ((weak, alias("__ide_led")));
+
 #ifndef CONFIG_IDE_LED	/* define LED macros, they are not used anyways */
 # define DEVICE_LED(x) 0
 # define LED_IDE1 1
@@ -277,7 +280,7 @@ __weak void ide_led(uchar led, uchar status)
 
 /* ------------------------------------------------------------------------- */
 
-__weak void ide_outb(int dev, int port, unsigned char val)
+inline void __ide_outb(int dev, int port, unsigned char val)
 {
 	debug("ide_outb (dev= %d, port= 0x%x, val= 0x%02x) : @ 0x%08lx\n",
 	      dev, port, val,
@@ -296,7 +299,10 @@ __weak void ide_outb(int dev, int port, unsigned char val)
 #endif
 }
 
-__weak unsigned char ide_inb(int dev, int port)
+void ide_outb(int dev, int port, unsigned char val)
+	__attribute__ ((weak, alias("__ide_outb")));
+
+inline unsigned char __ide_inb(int dev, int port)
 {
 	uchar val;
 
@@ -311,6 +317,19 @@ __weak unsigned char ide_inb(int dev, int port)
 	      (ATA_CURR_BASE(dev) + CONFIG_SYS_ATA_PORT_ADDR(port)), val);
 	return val;
 }
+
+unsigned char ide_inb(int dev, int port)
+	__attribute__ ((weak, alias("__ide_inb")));
+
+#ifdef CONFIG_TUNE_PIO
+inline int __ide_set_piomode(int pio_mode)
+{
+	return 0;
+}
+
+inline int ide_set_piomode(int pio_mode)
+	__attribute__ ((weak, alias("__ide_set_piomode")));
+#endif
 
 void ide_init(void)
 {
@@ -452,14 +471,23 @@ block_dev_desc_t *ide_get_dev(int dev)
 
 /* ------------------------------------------------------------------------- */
 
+void ide_input_swap_data(int dev, ulong *sect_buf, int words)
+	__attribute__ ((weak, alias("__ide_input_swap_data")));
+
+void ide_input_data(int dev, ulong *sect_buf, int words)
+	__attribute__ ((weak, alias("__ide_input_data")));
+
+void ide_output_data(int dev, const ulong *sect_buf, int words)
+	__attribute__ ((weak, alias("__ide_output_data")));
+
 /* We only need to swap data if we are running on a big endian cpu. */
 #if defined(__LITTLE_ENDIAN)
-__weak void ide_input_swap_data(int dev, ulong *sect_buf, int words)
+void __ide_input_swap_data(int dev, ulong *sect_buf, int words)
 {
 	ide_input_data(dev, sect_buf, words);
 }
 #else
-__weak void ide_input_swap_data(int dev, ulong *sect_buf, int words)
+void __ide_input_swap_data(int dev, ulong *sect_buf, int words)
 {
 	volatile ushort *pbuf =
 		(ushort *) (ATA_CURR_BASE(dev) + ATA_DATA_REG);
@@ -482,7 +510,7 @@ __weak void ide_input_swap_data(int dev, ulong *sect_buf, int words)
 
 
 #if defined(CONFIG_IDE_SWAP_IO)
-__weak void ide_output_data(int dev, const ulong *sect_buf, int words)
+void __ide_output_data(int dev, const ulong *sect_buf, int words)
 {
 	ushort *dbuf;
 	volatile ushort *pbuf;
@@ -497,7 +525,7 @@ __weak void ide_output_data(int dev, const ulong *sect_buf, int words)
 	}
 }
 #else  /* ! CONFIG_IDE_SWAP_IO */
-__weak void ide_output_data(int dev, const ulong *sect_buf, int words)
+void __ide_output_data(int dev, const ulong *sect_buf, int words)
 {
 #if defined(CONFIG_IDE_AHB)
 	ide_write_data(dev, sect_buf, words);
@@ -508,7 +536,7 @@ __weak void ide_output_data(int dev, const ulong *sect_buf, int words)
 #endif /* CONFIG_IDE_SWAP_IO */
 
 #if defined(CONFIG_IDE_SWAP_IO)
-__weak void ide_input_data(int dev, ulong *sect_buf, int words)
+void __ide_input_data(int dev, ulong *sect_buf, int words)
 {
 	ushort *dbuf;
 	volatile ushort *pbuf;
@@ -526,7 +554,7 @@ __weak void ide_input_data(int dev, ulong *sect_buf, int words)
 	}
 }
 #else  /* ! CONFIG_IDE_SWAP_IO */
-__weak void ide_input_data(int dev, ulong *sect_buf, int words)
+void __ide_input_data(int dev, ulong *sect_buf, int words)
 {
 #if defined(CONFIG_IDE_AHB)
 	ide_read_data(dev, sect_buf, words);
@@ -546,6 +574,14 @@ static void ide_ident(block_dev_desc_t *dev_desc)
 
 #ifdef CONFIG_ATAPI
 	int retries = 0;
+#endif
+
+#ifdef CONFIG_TUNE_PIO
+	int pio_mode;
+#endif
+
+#if 0
+	int mode, cycle_time;
 #endif
 	int device;
 
@@ -654,6 +690,72 @@ static void ide_ident(block_dev_desc_t *dev_desc)
 		dev_desc->removable = 1;
 	else
 		dev_desc->removable = 0;
+
+#ifdef CONFIG_TUNE_PIO
+	/* Mode 0 - 2 only, are directly determined by word 51. */
+	pio_mode = iop.tPIO;
+	if (pio_mode > 2) {
+		printf("WARNING: Invalid PIO (word 51 = %d).\n", pio_mode);
+		/* Force it to dead slow, and hope for the best... */
+		pio_mode = 0;
+	}
+
+	/* Any CompactFlash Storage Card that supports PIO mode 3 or above
+	 * shall set bit 1 of word 53 to one and support the fields contained
+	 * in words 64 through 70.
+	 */
+	if (iop.field_valid & 0x02) {
+		/*
+		 * Mode 3 and above are possible.  Check in order from slow
+		 * to fast, so we wind up with the highest mode allowed.
+		 */
+		if (iop.eide_pio_modes & 0x01)
+			pio_mode = 3;
+		if (iop.eide_pio_modes & 0x02)
+			pio_mode = 4;
+		if (ata_id_is_cfa((u16 *)&iop)) {
+			if ((iop.cf_advanced_caps & 0x07) == 0x01)
+				pio_mode = 5;
+			if ((iop.cf_advanced_caps & 0x07) == 0x02)
+				pio_mode = 6;
+		}
+	}
+
+	/* System-specific, depends on bus speeds, etc. */
+	ide_set_piomode(pio_mode);
+#endif /* CONFIG_TUNE_PIO */
+
+#if 0
+	/*
+	 * Drive PIO mode autoselection
+	 */
+	mode = iop.tPIO;
+
+	printf("tPIO = 0x%02x = %d\n", mode, mode);
+	if (mode > 2) {		/* 2 is maximum allowed tPIO value */
+		mode = 2;
+		debug("Override tPIO -> 2\n");
+	}
+	if (iop.field_valid & 2) {	/* drive implements ATA2? */
+		debug("Drive implements ATA2\n");
+		if (iop.capability & 8) {	/* drive supports use_iordy? */
+			cycle_time = iop.eide_pio_iordy;
+		} else {
+			cycle_time = iop.eide_pio;
+		}
+		debug("cycle time = %d\n", cycle_time);
+		mode = 4;
+		if (cycle_time > 120)
+			mode = 3;	/* 120 ns for PIO mode 4 */
+		if (cycle_time > 180)
+			mode = 2;	/* 180 ns for PIO mode 3 */
+		if (cycle_time > 240)
+			mode = 1;	/* 240 ns for PIO mode 4 */
+		if (cycle_time > 383)
+			mode = 0;	/* 383 ns for PIO mode 4 */
+	}
+	printf("PIO mode to use: PIO %d\n", mode);
+#endif /* 0 */
 
 #ifdef CONFIG_ATAPI
 	if (dev_desc->if_type == IF_TYPE_ATAPI) {
@@ -1020,10 +1122,17 @@ int ide_device_present(int dev)
  * ATAPI Support
  */
 
+void ide_input_data_shorts(int dev, ushort *sect_buf, int shorts)
+	__attribute__ ((weak, alias("__ide_input_data_shorts")));
+
+void ide_output_data_shorts(int dev, ushort *sect_buf, int shorts)
+	__attribute__ ((weak, alias("__ide_output_data_shorts")));
+
+
 #if defined(CONFIG_IDE_SWAP_IO)
 /* since ATAPI may use commands with not 4 bytes alligned length
  * we have our own transfer functions, 2 bytes alligned */
-__weak void ide_output_data_shorts(int dev, ushort *sect_buf, int shorts)
+void __ide_output_data_shorts(int dev, ushort *sect_buf, int shorts)
 {
 	ushort *dbuf;
 	volatile ushort *pbuf;
@@ -1040,7 +1149,7 @@ __weak void ide_output_data_shorts(int dev, ushort *sect_buf, int shorts)
 	}
 }
 
-__weak void ide_input_data_shorts(int dev, ushort *sect_buf, int shorts)
+void __ide_input_data_shorts(int dev, ushort *sect_buf, int shorts)
 {
 	ushort *dbuf;
 	volatile ushort *pbuf;
@@ -1058,12 +1167,12 @@ __weak void ide_input_data_shorts(int dev, ushort *sect_buf, int shorts)
 }
 
 #else  /* ! CONFIG_IDE_SWAP_IO */
-__weak void ide_output_data_shorts(int dev, ushort *sect_buf, int shorts)
+void __ide_output_data_shorts(int dev, ushort *sect_buf, int shorts)
 {
 	outsw(ATA_CURR_BASE(dev) + ATA_DATA_REG, sect_buf, shorts);
 }
 
-__weak void ide_input_data_shorts(int dev, ushort *sect_buf, int shorts)
+void __ide_input_data_shorts(int dev, ushort *sect_buf, int shorts)
 {
 	insw(ATA_CURR_BASE(dev) + ATA_DATA_REG, sect_buf, shorts);
 }

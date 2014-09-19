@@ -92,9 +92,9 @@
 
 #define CONFIG_DFU_ALT \
 	"u-boot raw 0x80 0x800;" \
-	"/uImage ext4 0 2;" \
-	"/modem.bin ext4 0 2;" \
-	"/exynos4412-trats2.dtb ext4 0 2;" \
+	"uImage ext4 0 2;" \
+	"modem.bin ext4 0 2;" \
+	"exynos4412-trats2.dtb ext4 0 2;" \
 	""PARTS_CSA" part 0 1;" \
 	""PARTS_BOOT" part 0 2;" \
 	""PARTS_QBOOT" part 0 3;" \
@@ -240,5 +240,8 @@ int get_soft_i2c_sda_pin(void);
 #define CONFIG_EXYNOS_MIPI_DSIM
 #define CONFIG_VIDEO_BMP_GZIP
 #define CONFIG_SYS_VIDEO_LOGO_MAX_SIZE ((500 * 160 * 4) + 54)
+
+#define LCD_XRES	720
+#define LCD_YRES	1280
 
 #endif	/* __CONFIG_H */

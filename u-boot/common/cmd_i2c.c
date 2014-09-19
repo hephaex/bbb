@@ -1366,8 +1366,7 @@ int do_edid(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
  * Returns zero always.
  */
 #if defined(CONFIG_SYS_I2C)
-static int do_i2c_show_bus(cmd_tbl_t *cmdtp, int flag, int argc,
-				char * const argv[])
+int do_i2c_show_bus(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 	int	i;
 #ifndef CONFIG_SYS_I2C_DIRECT_BUS
@@ -1426,8 +1425,7 @@ static int do_i2c_show_bus(cmd_tbl_t *cmdtp, int flag, int argc,
  * on error.
  */
 #if defined(CONFIG_SYS_I2C) || defined(CONFIG_I2C_MULTI_BUS)
-static int do_i2c_bus_num(cmd_tbl_t *cmdtp, int flag, int argc,
-				char * const argv[])
+int do_i2c_bus_num(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 {
 	int		ret = 0;
 	unsigned int	bus_no;

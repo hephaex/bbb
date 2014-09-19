@@ -46,6 +46,7 @@
 #endif
 
 /* Spl */
+#define CONFIG_SPL
 #define CONFIG_SPL_FRAMEWORK
 #define CONFIG_SPL_BOARD_INIT
 #define CONFIG_SPL_NAND_SUPPORT

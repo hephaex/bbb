@@ -12,6 +12,7 @@
 
 /* High Level configuration Options */
 #define CONFIG_ARMV7
+#define CONFIG_ZYNQ
 
 /* CPU clock */
 #ifndef CONFIG_CPU_FREQ_HZ
@@ -256,6 +257,7 @@
 #define CONFIG_CMD_TFTPPUT
 
 /* SPL part */
+#define CONFIG_SPL
 #define CONFIG_CMD_SPL
 #define CONFIG_SPL_FRAMEWORK
 #define CONFIG_SPL_LIBCOMMON_SUPPORT
@@ -336,7 +338,5 @@
 #define CONFIG_SPL_BSS_MAX_SIZE		0x100000
 
 #define CONFIG_SYS_UBOOT_START	CONFIG_SYS_TEXT_BASE
-
-#define CONFIG_SYS_GENERIC_BOARD
 
 #endif /* __CONFIG_ZYNQ_COMMON_H */

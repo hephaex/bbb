@@ -1,6 +1,9 @@
 #include <common.h>
 #include <exports.h>
-#include <linux/compiler.h>
+
+#ifndef GCC_VERSION
+#define GCC_VERSION (__GNUC__ * 1000 + __GNUC_MINOR__)
+#endif /* GCC_VERSION */
 
 #if defined(CONFIG_X86)
 /*
@@ -234,7 +237,7 @@ gd_t *global_data;
  * implementation. On the other hand, asm() statements with
  * arguments can be used only inside the functions (gcc limitation)
  */
-#if GCC_VERSION < 30400
+#if GCC_VERSION < 3004
 static
 #endif /* GCC_VERSION */
 void __attribute__((unused)) dummy(void)

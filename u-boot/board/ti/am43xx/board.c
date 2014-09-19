@@ -19,7 +19,6 @@
 #include <asm/arch/gpio.h>
 #include <asm/emif.h>
 #include "board.h"
-#include <power/pmic.h>
 #include <power/tps65218.h>
 #include <miiphy.h>
 #include <cpsw.h>
@@ -606,19 +605,6 @@ void sdram_init(void)
 }
 #endif
 
-/* setup board specific PMIC */
-int power_init_board(void)
-{
-	struct pmic *p;
-
-	power_tps65218_init(I2C_PMIC);
-	p = pmic_get("TPS65218_PMIC");
-	if (p && !pmic_probe(p))
-		puts("PMIC:  TPS65218\n");
-
-	return 0;
-}
-
 int board_init(void)
 {
 	struct l3f_cfg_bwlimiter *bwlimiter = (struct l3f_cfg_bwlimiter *)L3F_CFG_BWLIMITER;
@@ -626,7 +612,6 @@ int board_init(void)
 	    modena_init0_bw_integer, modena_init0_watermark_0;
 
 	gd->bd->bi_boot_params = CONFIG_SYS_SDRAM_BASE + 0x100;
-	gpmc_init();
 
 	/* Clear all important bits for DSS errata that may need to be tweaked*/
 	mreqprio_0 = readl(&cdev->mreqprio_0) & MREQPRIO_0_SAB_INIT1_MASK &

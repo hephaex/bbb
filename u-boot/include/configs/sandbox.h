@@ -31,9 +31,6 @@
 #define CONFIG_DM_DEMO_SHAPE
 #define CONFIG_DM_GPIO
 #define CONFIG_DM_TEST
-#define CONFIG_DM_SERIAL
-
-#define CONFIG_SYS_STDIO_DEREGISTER
 
 /* Number of bits in a C 'long' on this architecture */
 #define CONFIG_SANDBOX_BITS_PER_LONG	64
@@ -71,10 +68,8 @@
 #define CONFIG_EFI_PARTITION
 
 /*
- * Size of malloc() pool, before and after relocation
+ * Size of malloc() pool, although we don't actually use this yet.
  */
-#define CONFIG_SYS_MALLOC_F_LEN	(1 << 10)
-#define CONFIG_MALLOC_F_ADDR		0x0010000
 #define CONFIG_SYS_MALLOC_LEN		(32 << 20)	/* 32MB  */
 
 #define CONFIG_SYS_HUSH_PARSER

@@ -87,6 +87,4 @@ extern const uint32_t iocsr_scan_chain2_table[
 extern const uint32_t iocsr_scan_chain3_table[
 	((CONFIG_HPS_IOCSR_SCANCHAIN3_LENGTH / 32) + 1)];
 
-int scan_mgr_configure_iocsr(void);
-
 #endif /* _SCAN_MANAGER_H_ */

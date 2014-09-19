@@ -4,6 +4,7 @@
 #include <linux/usb/ch9.h>
 #include <linux/usb/gadget.h>
 
+#define __UBOOT__
 #include <usb.h>
 #include "linux-compat.h"
 #include "usb-compat.h"

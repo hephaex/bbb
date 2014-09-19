@@ -215,7 +215,7 @@ static void nc_send_packet(const char *buf, int len)
 	}
 }
 
-static int nc_start(struct stdio_dev *dev)
+static int nc_start(void)
 {
 	int retval;
 
@@ -235,7 +235,7 @@ static int nc_start(struct stdio_dev *dev)
 	return 0;
 }
 
-static void nc_putc(struct stdio_dev *dev, char c)
+static void nc_putc(char c)
 {
 	if (output_recursion)
 		return;
@@ -246,7 +246,7 @@ static void nc_putc(struct stdio_dev *dev, char c)
 	output_recursion = 0;
 }
 
-static void nc_puts(struct stdio_dev *dev, const char *s)
+static void nc_puts(const char *s)
 {
 	int len;
 
@@ -265,7 +265,7 @@ static void nc_puts(struct stdio_dev *dev, const char *s)
 	output_recursion = 0;
 }
 
-static int nc_getc(struct stdio_dev *dev)
+static int nc_getc(void)
 {
 	uchar c;
 
@@ -286,7 +286,7 @@ static int nc_getc(struct stdio_dev *dev)
 	return c;
 }
 
-static int nc_tstc(struct stdio_dev *dev)
+static int nc_tstc(void)
 {
 	struct eth_device *eth;
 

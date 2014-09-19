@@ -561,7 +561,6 @@ static void fsl_elbc_read_buf(struct mtd_info *mtd, u8 *buf, int len)
 		       len, avail);
 }
 
-#if defined(CONFIG_MTD_NAND_VERIFY_WRITE)
 /*
  * Verify buffer against the FCM Controller Data Buffer
  */
@@ -594,7 +593,6 @@ static int fsl_elbc_verify_buf(struct mtd_info *mtd,
 	ctrl->index += len;
 	return i == len && ctrl->status == LTESR_CC ? 0 : -EIO;
 }
-#endif
 
 /* This function is called after Program and Erase Operations to
  * check for success or failure.
@@ -727,9 +725,7 @@ static int fsl_elbc_chip_init(int devnum, u8 *addr)
 	nand->read_byte = fsl_elbc_read_byte;
 	nand->write_buf = fsl_elbc_write_buf;
 	nand->read_buf = fsl_elbc_read_buf;
-#if defined(CONFIG_MTD_NAND_VERIFY_WRITE)
 	nand->verify_buf = fsl_elbc_verify_buf;
-#endif
 	nand->select_chip = fsl_elbc_select_chip;
 	nand->cmdfunc = fsl_elbc_cmdfunc;
 	nand->waitfunc = fsl_elbc_wait;

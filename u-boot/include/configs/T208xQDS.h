@@ -11,8 +11,6 @@
 #ifndef __T208xQDS_H
 #define __T208xQDS_H
 
-#define CONFIG_SYS_GENERIC_BOARD
-#define CONFIG_DISPLAY_BOARDINFO
 #define CONFIG_ICS307_REFCLK_HZ 25000000  /* ICS307 ref clk freq */
 #define CONFIG_MMC
 #define CONFIG_SPI_FLASH
@@ -55,6 +53,7 @@
 #define CONFIG_SYS_FSL_PBL_RCW board/freescale/t208xqds/t2081_rcw.cfg
 #endif
 
+#define CONFIG_SPL
 #define CONFIG_SPL_MPC8XXX_INIT_DDR_SUPPORT
 #define CONFIG_SPL_ENV_SUPPORT
 #define CONFIG_SPL_SERIAL_SUPPORT
@@ -538,7 +537,7 @@ unsigned long get_board_ddr_clk(void);
 #ifdef CONFIG_SPI_FLASH
 #define CONFIG_FSL_ESPI
 #define CONFIG_SPI_FLASH_STMICRO
-#ifndef CONFIG_SPL_BUILD
+#if !defined(CONFIG_SPL_BUILD) && defined(CONFIG_RAMBOOT_PBL)
 #define CONFIG_SPI_FLASH_SST
 #define CONFIG_SPI_FLASH_EON
 #endif

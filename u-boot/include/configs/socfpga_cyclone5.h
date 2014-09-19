@@ -15,7 +15,7 @@
  * High level configuration
  */
 /* Virtual target or real hardware */
-#undef CONFIG_SOCFPGA_VIRTUAL_TARGET
+#define CONFIG_SOCFPGA_VIRTUAL_TARGET
 
 #define CONFIG_ARMV7
 #define CONFIG_SYS_DCACHE_OFF
@@ -208,38 +208,6 @@
 #define CONFIG_ENV_IS_NOWHERE
 
 /*
- * network support
- */
-#ifndef CONFIG_SOCFPGA_VIRTUAL_TARGET
-#define CONFIG_DESIGNWARE_ETH          1
-#endif
-
-#ifdef CONFIG_DESIGNWARE_ETH
-#define CONFIG_EMAC0_BASE              SOCFPGA_EMAC0_ADDRESS
-#define CONFIG_EMAC1_BASE              SOCFPGA_EMAC1_ADDRESS
-/* console support for network */
-#define CONFIG_CMD_DHCP
-#define CONFIG_CMD_MII
-#define CONFIG_CMD_NET
-#define CONFIG_CMD_PING
-/* designware */
-#define CONFIG_NET_MULTI
-#define CONFIG_DW_ALTDESCRIPTOR
-#define CONFIG_DW_SEARCH_PHY
-#define CONFIG_MII
-#define CONFIG_PHY_GIGE
-#define CONFIG_DW_AUTONEG
-#define CONFIG_AUTONEG_TIMEOUT         (15 * CONFIG_SYS_HZ)
-#define CONFIG_PHYLIB
-#define CONFIG_PHY_MICREL
-#define CONFIG_PHY_MICREL_KSZ9021
-/* EMAC controller and PHY used */
-#define CONFIG_EMAC_BASE               CONFIG_EMAC1_BASE
-#define CONFIG_EPHY_PHY_ADDR           CONFIG_EPHY1_PHY_ADDR
-#define CONFIG_PHY_INTERFACE_MODE      PHY_INTERFACE_MODE_RGMII
-#endif /* CONFIG_DESIGNWARE_ETH */
-
-/*
  * L4 Watchdog
  */
 #define CONFIG_HW_WATCHDOG
@@ -255,6 +223,7 @@
  */
 
 /* Enable building of SPL globally */
+#define CONFIG_SPL
 #define CONFIG_SPL_FRAMEWORK
 
 /* TEXT_BASE for linking the SPL binary */

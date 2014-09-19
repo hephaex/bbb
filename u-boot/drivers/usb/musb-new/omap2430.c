@@ -24,6 +24,7 @@
  * Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#define __UBOOT__
 #ifndef __UBOOT__
 #include <linux/module.h>
 #include <linux/kernel.h>

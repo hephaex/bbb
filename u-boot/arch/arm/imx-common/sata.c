@@ -12,7 +12,8 @@
 
 int setup_sata(void)
 {
-	struct iomuxc *const iomuxc_regs = (struct iomuxc *)IOMUXC_BASE_ADDR;
+	struct iomuxc_base_regs *const iomuxc_regs
+		= (struct iomuxc_base_regs *)IOMUXC_BASE_ADDR;
 	int ret;
 
 	if (!is_cpu_type(MXC_CPU_MX6Q) && !is_cpu_type(MXC_CPU_MX6D))

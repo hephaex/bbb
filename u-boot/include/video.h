@@ -11,11 +11,9 @@
 
 /* Video functions */
 
-struct stdio_dev;
-
-int	video_init(void *videobase);
-void	video_putc(struct stdio_dev *dev, const char c);
-void	video_puts(struct stdio_dev *dev, const char *s);
+int	video_init	(void *videobase);
+void	video_putc	(const char c);
+void	video_puts	(const char *s);
 
 /**
  * Display a BMP format bitmap on the screen

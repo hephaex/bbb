@@ -10,7 +10,6 @@
 #include <net.h>
 #include <miiphy.h>
 #include <phy.h>
-#include <asm/errno.h>
 
 void eth_parse_enetaddr(const char *addr, uchar *enetaddr)
 {
@@ -153,11 +152,6 @@ static void eth_current_changed(void)
 		setenv("ethact", NULL);
 }
 
-int eth_address_set(unsigned char *addr)
-{
-	return memcmp(addr, "\0\0\0\0\0\0", 6);
-}
-
 int eth_write_hwaddr(struct eth_device *dev, const char *base_name,
 		   int eth_number)
 {
@@ -166,8 +160,8 @@ int eth_write_hwaddr(struct eth_device *dev, const char *base_name,
 
 	eth_getenv_enetaddr_by_index(base_name, eth_number, env_enetaddr);
 
-	if (eth_address_set(env_enetaddr)) {
-		if (eth_address_set(dev->enetaddr) &&
+	if (memcmp(env_enetaddr, "\0\0\0\0\0\0", 6)) {
+		if (memcmp(dev->enetaddr, "\0\0\0\0\0\0", 6) &&
 				memcmp(dev->enetaddr, env_enetaddr, 6)) {
 			printf("\nWarning: %s MAC addresses don't match:\n",
 				dev->name);
@@ -183,22 +177,14 @@ int eth_write_hwaddr(struct eth_device *dev, const char *base_name,
 					     dev->enetaddr);
 		printf("\nWarning: %s using MAC address from net device\n",
 			dev->name);
-	} else if (!(eth_address_set(dev->enetaddr))) {
-		printf("\nError: %s address not set.\n",
-		       dev->name);
-		return -EINVAL;
 	}
 
-	if (dev->write_hwaddr && !eth_mac_skip(eth_number)) {
-		if (!is_valid_ether_addr(dev->enetaddr)) {
-			printf("\nError: %s address %pM illegal value\n",
-				 dev->name, dev->enetaddr);
-			return -EINVAL;
-		}
+	if (dev->write_hwaddr &&
+			!eth_mac_skip(eth_number)) {
+		if (!is_valid_ether_addr(dev->enetaddr))
+			return -1;
 
 		ret = dev->write_hwaddr(dev);
-		if (ret)
-			printf("\nWarning: %s failed to set MAC address\n", dev->name);
 	}
 
 	return ret;
@@ -317,7 +303,8 @@ int eth_initialize(bd_t *bis)
 				puts("\nWarning: eth device name has a space!"
 					"\n");
 
-			eth_write_hwaddr(dev, "eth", dev->index);
+			if (eth_write_hwaddr(dev, "eth", dev->index))
+				puts("\nWarning: failed to set MAC address\n");
 
 			dev = dev->next;
 			num_devices++;

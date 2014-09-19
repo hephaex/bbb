@@ -292,7 +292,6 @@ static int get_mtd_info(u8 type, u8 num, struct mtd_info **mtd)
 		printf("Device %s not found!\n", mtd_dev);
 		return 1;
 	}
-	put_mtd_device(*mtd);
 
 	return 0;
 }
@@ -862,7 +861,7 @@ static int device_parse(const char *const mtd_dev, const char **ret, struct mtd_
 	debug("dev type = %d (%s), dev num = %d, mtd-id = %s\n",
 			id->type, MTD_DEV_TYPE(id->type),
 			id->num, id->mtd_id);
-	debug("parsing partitions %.*s\n", (int)(pend ? pend - p : strlen(p)), p);
+	debug("parsing partitions %.*s\n", (pend ? pend - p : strlen(p)), p);
 
 
 	/* parse partitions */
@@ -1007,7 +1006,7 @@ static struct mtdids* id_find_by_mtd_id(const char *mtd_id, unsigned int mtd_id_
 	list_for_each(entry, &mtdids) {
 		id = list_entry(entry, struct mtdids, link);
 
-		debug("entry: '%s' (len = %zu)\n",
+		debug("entry: '%s' (len = %d)\n",
 				id->mtd_id, strlen(id->mtd_id));
 
 		if (mtd_id_len != strlen(id->mtd_id))

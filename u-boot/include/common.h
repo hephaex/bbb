@@ -32,7 +32,10 @@ typedef volatile unsigned char	vu_char;
     defined(CONFIG_MPC866)	|| \
     defined(CONFIG_MPC866P)
 # define CONFIG_MPC866_FAMILY 1
-#elif defined(CONFIG_MPC885)
+#elif defined(CONFIG_MPC870) \
+   || defined(CONFIG_MPC875) \
+   || defined(CONFIG_MPC880) \
+   || defined(CONFIG_MPC885)
 # define CONFIG_MPC885_FAMILY   1
 #endif
 #if   defined(CONFIG_MPC860)	   \
@@ -315,14 +318,14 @@ int arch_early_init_r(void);
 void board_show_dram(ulong size);
 
 /**
- * arch_fixup_fdt() - Write arch-specific information to fdt
+ * arch_fixup_memory_node() - Write arch-specific memory information to fdt
  *
- * Defined in arch/$(ARCH)/lib/bootm-fdt.c
+ * Defined in arch/$(ARCH)/lib/bootm.c
  *
  * @blob:	FDT blob to write to
  * @return 0 if ok, or -ve FDT_ERR_... on failure
  */
-int arch_fixup_fdt(void *blob);
+int arch_fixup_memory_node(void *blob);
 
 /* common/flash.c */
 void flash_perror (int);
@@ -616,7 +619,6 @@ int	checkicache   (void);
 int	checkdcache   (void);
 void	upmconfig     (unsigned int, unsigned int *, unsigned int);
 ulong	get_tbclk     (void);
-void	reset_misc    (void);
 void	reset_cpu     (ulong addr);
 #if defined (CONFIG_OF_LIBFDT) && defined (CONFIG_OF_BOARD_SETUP)
 void ft_cpu_setup(void *blob, bd_t *bd);
@@ -636,11 +638,6 @@ void	serial_putc_raw(const char);
 void	serial_puts   (const char *);
 int	serial_getc   (void);
 int	serial_tstc   (void);
-
-/* These versions take a stdio_dev pointer */
-struct stdio_dev;
-int serial_stub_getc(struct stdio_dev *sdev);
-int serial_stub_tstc(struct stdio_dev *sdev);
 
 void	_serial_setbrg (const int);
 void	_serial_putc   (const char, const int);

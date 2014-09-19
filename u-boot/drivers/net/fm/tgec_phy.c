@@ -1,6 +1,6 @@
 /*
  * Copyright 2009-2011 Freescale Semiconductor, Inc.
- *	Andy Fleming <afleming@gmail.com>
+ *	Andy Fleming <afleming@freescale.com>
  *
  * SPDX-License-Identifier:	GPL-2.0+
  * Some part is taken from tsec.c

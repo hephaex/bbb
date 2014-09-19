@@ -46,11 +46,6 @@ static inline int fs_exists_unsupported(const char *filename)
 	return 0;
 }
 
-static inline int fs_size_unsupported(const char *filename)
-{
-	return -1;
-}
-
 static inline int fs_read_unsupported(const char *filename, void *buf,
 				      int offset, int len)
 {
@@ -82,7 +77,6 @@ struct fstype_info {
 		     disk_partition_t *fs_partition);
 	int (*ls)(const char *dirname);
 	int (*exists)(const char *filename);
-	int (*size)(const char *filename);
 	int (*read)(const char *filename, void *buf, int offset, int len);
 	int (*write)(const char *filename, void *buf, int offset, int len);
 	void (*close)(void);
@@ -97,7 +91,6 @@ static struct fstype_info fstypes[] = {
 		.close = fat_close,
 		.ls = file_fat_ls,
 		.exists = fat_exists,
-		.size = fat_size,
 		.read = fat_read_file,
 		.write = fs_write_unsupported,
 	},
@@ -110,7 +103,6 @@ static struct fstype_info fstypes[] = {
 		.close = ext4fs_close,
 		.ls = ext4fs_ls,
 		.exists = ext4fs_exists,
-		.size = ext4fs_size,
 		.read = ext4_read_file,
 		.write = fs_write_unsupported,
 	},
@@ -123,7 +115,6 @@ static struct fstype_info fstypes[] = {
 		.close = sandbox_fs_close,
 		.ls = sandbox_fs_ls,
 		.exists = sandbox_fs_exists,
-		.size = sandbox_fs_size,
 		.read = fs_read_sandbox,
 		.write = fs_write_sandbox,
 	},
@@ -135,7 +126,6 @@ static struct fstype_info fstypes[] = {
 		.close = fs_close_unsupported,
 		.ls = fs_ls_unsupported,
 		.exists = fs_exists_unsupported,
-		.size = fs_size_unsupported,
 		.read = fs_read_unsupported,
 		.write = fs_write_unsupported,
 	},
@@ -233,19 +223,6 @@ int fs_exists(const char *filename)
 	return ret;
 }
 
-int fs_size(const char *filename)
-{
-	int ret;
-
-	struct fstype_info *info = fs_get_info(fs_type);
-
-	ret = info->size(filename);
-
-	fs_close();
-
-	return ret;
-}
-
 int fs_read(const char *filename, ulong addr, int offset, int len)
 {
 	struct fstype_info *info = fs_get_info(fs_type);
@@ -289,26 +266,6 @@ int fs_write(const char *filename, ulong addr, int offset, int len)
 	return ret;
 }
 
-int do_size(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[],
-		int fstype)
-{
-	int size;
-
-	if (argc != 4)
-		return CMD_RET_USAGE;
-
-	if (fs_set_blk_dev(argv[1], argv[2], fstype))
-		return 1;
-
-	size = fs_size(argv[3]);
-	if (size < 0)
-		return CMD_RET_FAILURE;
-
-	setenv_hex("filesize", size);
-
-	return 0;
-}
-
 int do_load(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[],
 		int fstype)
 {
@@ -319,7 +276,6 @@ int do_load(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[],
 	unsigned long pos;
 	int len_read;
 	unsigned long time;
-	char *ep;
 
 	if (argc < 2)
 		return CMD_RET_USAGE;
@@ -330,9 +286,7 @@ int do_load(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[],
 		return 1;
 
 	if (argc >= 4) {
-		addr = simple_strtoul(argv[3], &ep, 16);
-		if (ep == argv[3] || *ep != '\0')
-			return CMD_RET_USAGE;
+		addr = simple_strtoul(argv[3], NULL, 16);
 	} else {
 		addr_str = getenv("loadaddr");
 		if (addr_str != NULL)

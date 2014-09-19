@@ -16,7 +16,6 @@
  * assembly versions such as arch/powerpc/lib/div64.S and arch/sh/lib/div64.S.
  */
 
-#include <div64.h>
 #include <linux/types.h>
 
 uint32_t __div64_32(uint64_t *n, uint32_t base)

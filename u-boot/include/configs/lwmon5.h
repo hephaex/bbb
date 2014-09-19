@@ -665,6 +665,7 @@
  * SPL related defines
  */
 #ifdef CONFIG_LCD4_LWMON5
+#define CONFIG_SPL
 #define CONFIG_SPL_FRAMEWORK
 #define CONFIG_SPL_BOARD_INIT
 #define CONFIG_SPL_NOR_SUPPORT

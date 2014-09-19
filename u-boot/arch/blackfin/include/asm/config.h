@@ -174,8 +174,4 @@
 	}
 #endif
 
-#define CONFIG_SYS_GENERIC_BOARD
-#define CONFIG_DISPLAY_CPUINFO
-#define CONFIG_ARCH_MISC_INIT
-
 #endif

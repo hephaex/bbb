@@ -42,7 +42,7 @@ struct uclass_driver *lists_uclass_lookup(enum uclass_id id);
  * @early_only: If true, bind only drivers with the DM_INIT_F flag. If false
  * bind all drivers.
  */
-int lists_bind_drivers(struct udevice *parent, bool pre_reloc_only);
+int lists_bind_drivers(struct udevice *parent);
 
 /**
  * lists_bind_fdt() - bind a device tree node
@@ -53,11 +53,7 @@ int lists_bind_drivers(struct udevice *parent, bool pre_reloc_only);
  * @parent: parent driver (root)
  * @blob: device tree blob
  * @offset: offset of this device tree node
- * @devp: if non-NULL, returns a pointer to the bound device
- * @return 0 if device was bound, -EINVAL if the device tree is invalid,
- * other -ve value on error
  */
-int lists_bind_fdt(struct udevice *parent, const void *blob, int offset,
-		   struct udevice **devp);
+int lists_bind_fdt(struct udevice *parent, const void *blob, int offset);
 
 #endif

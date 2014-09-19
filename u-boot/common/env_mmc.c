@@ -62,36 +62,16 @@ int env_init(void)
 	return 0;
 }
 
+static int init_mmc_for_env(struct mmc *mmc)
+{
 #ifdef CONFIG_SYS_MMC_ENV_PART
-__weak uint mmc_get_env_part(struct mmc *mmc)
-{
-	return CONFIG_SYS_MMC_ENV_PART;
-}
-
-static int mmc_set_env_part(struct mmc *mmc)
-{
-	uint part = mmc_get_env_part(mmc);
 	int dev = CONFIG_SYS_MMC_ENV_DEV;
-	int ret = 0;
 
 #ifdef CONFIG_SPL_BUILD
 	dev = 0;
 #endif
-
-	if (part != mmc->part_num) {
-		ret = mmc_switch_part(dev, part);
-		if (ret)
-			puts("MMC partition switch failed\n");
-	}
-
-	return ret;
-}
-#else
-static inline int mmc_set_env_part(struct mmc *mmc) {return 0; };
 #endif
 
-static int init_mmc_for_env(struct mmc *mmc)
-{
 	if (!mmc) {
 		puts("No MMC card found\n");
 		return -1;
@@ -102,7 +82,16 @@ static int init_mmc_for_env(struct mmc *mmc)
 		return -1;
 	}
 
-	return mmc_set_env_part(mmc);
+#ifdef CONFIG_SYS_MMC_ENV_PART
+	if (CONFIG_SYS_MMC_ENV_PART != mmc->part_num) {
+		if (mmc_switch_part(dev, CONFIG_SYS_MMC_ENV_PART)) {
+			puts("MMC partition switch failed\n");
+			return -1;
+		}
+	}
+#endif
+
+	return 0;
 }
 
 static void fini_mmc_for_env(struct mmc *mmc)

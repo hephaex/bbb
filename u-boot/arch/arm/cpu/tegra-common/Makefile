@@ -14,4 +14,3 @@ obj-y += clock.o
 obj-y += lowlevel_init.o
 obj-y += pinmux-common.o
 obj-$(CONFIG_DISPLAY_CPUINFO) += sys_info.o
-obj-$(CONFIG_TEGRA124) += vpr.o

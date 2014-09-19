@@ -19,7 +19,6 @@
 #define __LINUX_USB_GADGET_H
 
 #include <errno.h>
-#include <linux/compat.h>
 #include <linux/list.h>
 
 struct usb_ep;
@@ -409,6 +408,11 @@ struct usb_gadget_ops {
 	int	(*pullup) (struct usb_gadget *, int is_on);
 	int	(*ioctl)(struct usb_gadget *,
 				unsigned code, unsigned long param);
+};
+
+struct device {
+	void		*driver_data;	/* data private to the driver */
+	void            *device_data;   /* data private to the device */
 };
 
 /**

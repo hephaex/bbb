@@ -18,7 +18,6 @@ SECTIONS
 	. = ALIGN(4);
 	.text      :
 	{
-	  *(.vectors)
 	  arch/arm/cpu/arm926ejs/start.o		(.text*)
 	  arch/arm/cpu/arm926ejs/davinci/built-in.o	(.text*)
 	  drivers/mtd/nand/built-in.o			(.text*)

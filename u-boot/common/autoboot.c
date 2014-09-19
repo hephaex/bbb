@@ -6,7 +6,6 @@
  */
 
 #include <common.h>
-#include <autoboot.h>
 #include <bootretry.h>
 #include <cli.h>
 #include <fdtdec.h>

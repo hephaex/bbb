@@ -11,7 +11,6 @@
 #include <errno.h>
 #include <dm/device.h>
 #include <dm/device-internal.h>
-#include <dm/lists.h>
 #include <dm/platdata.h>
 #include <dm/uclass.h>
 #include <dm/util.h>
@@ -62,7 +61,7 @@ struct uclass_driver *lists_uclass_lookup(enum uclass_id id)
 	return NULL;
 }
 
-int lists_bind_drivers(struct udevice *parent, bool pre_reloc_only)
+int lists_bind_drivers(struct udevice *parent)
 {
 	struct driver_info *info =
 		ll_entry_start(struct driver_info, driver_info);
@@ -73,8 +72,8 @@ int lists_bind_drivers(struct udevice *parent, bool pre_reloc_only)
 	int ret;
 
 	for (entry = info; entry != info + n_ents; entry++) {
-		ret = device_bind_by_name(parent, pre_reloc_only, entry, &dev);
-		if (ret && ret != -EPERM) {
+		ret = device_bind_by_name(parent, entry, &dev);
+		if (ret) {
 			dm_warn("No match for driver '%s'\n", entry->name);
 			if (!result || ret != -ENOENT)
 				result = ret;
@@ -118,28 +117,22 @@ static int driver_check_compatible(const void *blob, int offset,
 	return -ENOENT;
 }
 
-int lists_bind_fdt(struct udevice *parent, const void *blob, int offset,
-		   struct udevice **devp)
+int lists_bind_fdt(struct udevice *parent, const void *blob, int offset)
 {
 	struct driver *driver = ll_entry_start(struct driver, driver);
 	const int n_ents = ll_entry_count(struct driver, driver);
 	struct driver *entry;
 	struct udevice *dev;
-	bool found = false;
 	const char *name;
 	int result = 0;
-	int ret = 0;
+	int ret;
 
 	dm_dbg("bind node %s\n", fdt_get_name(blob, offset, NULL));
-	if (devp)
-		*devp = NULL;
 	for (entry = driver; entry != driver + n_ents; entry++) {
 		ret = driver_check_compatible(blob, offset, entry->of_match);
-		name = fdt_get_name(blob, offset, NULL);
 		if (ret == -ENOENT) {
 			continue;
 		} else if (ret == -ENODEV) {
-			dm_dbg("Device '%s' has no compatible string\n", name);
 			break;
 		} else if (ret) {
 			dm_warn("Device tree error at offset %d\n", offset);
@@ -148,22 +141,14 @@ int lists_bind_fdt(struct udevice *parent, const void *blob, int offset,
 			break;
 		}
 
+		name = fdt_get_name(blob, offset, NULL);
 		dm_dbg("   - found match at '%s'\n", entry->name);
 		ret = device_bind(parent, entry, name, NULL, offset, &dev);
 		if (ret) {
-			dm_warn("Error binding driver '%s'\n", entry->name);
-			return ret;
-		} else {
-			found = true;
-			if (devp)
-				*devp = dev;
+			dm_warn("No match for driver '%s'\n", entry->name);
+			if (!result || ret != -ENOENT)
+				result = ret;
 		}
-		break;
-	}
-
-	if (!found && !result && ret != -ENODEV) {
-		dm_dbg("No match for node '%s'\n",
-		       fdt_get_name(blob, offset, NULL));
 	}
 
 	return result;
