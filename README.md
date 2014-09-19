@@ -27,3 +27,13 @@ Configuring for am335x_evm - Board: am335x_evm, Options: SERIAL1,CONS_INDEX=1,NA
 mscho@gen ~/bbb/u-boot $ make -j2 ARCH=arm CROSS_COMPILE=armv7a-hardfloat-linux-gnueabi-
 ```
 
+### check images
+
+```
+mscho@gen ~/u-boot $ ls -l MLO
+-rw-r--r-- 1 mscho mscho 83700  9월 19 13:42 MLO
+mscho@gen ~/u-boot $ ls -l u-boot.img
+-rw-r--r-- 1 mscho mscho 450168  9월 19 13:42 u-boot.img
+```
+
+
