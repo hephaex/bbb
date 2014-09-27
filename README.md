@@ -5,6 +5,28 @@ reference:
 
 Please see https://github.com/beagleboard/linux for the latest official kernels.
 
+## prepare toolchain (for gentoo linux)
+ For build beglebone bloack, it needed to the following tools.
+* dev-vcs/git
+ - to download U-Boot, X-Loader and the kernel
+* sys-devel/crossdev
+ - to create a crosscompiler
+* dev-embedded/u-boot-tools
+ - to create a kernel image U-Boot can understand
+* sys-fs/dosfstools
+ - to create FAT32 filesystems
+* app-arch/lzop
+ - required by the kernel build
+
+```
+emerge dev-vcs/git sys-devel/crossdev dev-embedded/u-boot-tools sys-fs/dosfstools app-arch/lzop
+```
+
+build a crosscompiler
+```
+crossdev -S armv7a-hardfloat-linux-gnueabi
+```
+
 ## kernel 
 ======
 
